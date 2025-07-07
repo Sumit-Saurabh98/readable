@@ -10,11 +10,16 @@ export const env = createEnv({
     AUTH_GITHUB_CLIENT_SECRET: z.string().min(1),
     RESEND_API_KEY: z.string().min(1),
     ARCJET_KEY: z.string().min(1),
+    AWS_ACCESS_KEY_ID: z.string().min(1),
+    AWS_SECRET_ACCESS_KEY: z.string().min(1),
+    AWS_ENDPOINT_URL_S3: z.string().url(),
+    AWS_ENDPOINT_URL_IAM: z.string().url(),
+    AWS_REGION: z.string().min(1),
   },
   client: {
-    // put alient side variables here
+    NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES: z.string().min(1),
   },
   experimental__runtimeEnv: {
-    // put alient side variables here
+    NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES: process.env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES
   }
 });

@@ -14,6 +14,8 @@ export function RichTextEditor({fields}: {fields: any}) {
             }
         },
 
+        immediatelyRender: false,
+
         onUpdate: ({editor}) =>{
             fields.onChange(JSON.stringify(editor.getJSON()))
         },

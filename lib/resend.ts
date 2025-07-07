@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import 'server-only';
+
 import { Resend } from 'resend';
 import { env } from './env';
 

@@ -34,6 +34,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SelectContent, SelectItem } from "@/components/ui/select";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
+import Uploader from "@/components/file-uploader/Uploader";
 
 export default function CourseCreationPage() {
   const form = useForm<CourseSchemaType>({
@@ -147,11 +148,6 @@ export default function CourseCreationPage() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      {/* <Textarea
-                        {...field}
-                        placeholder="Description"
-                        className="min-h-[120px]"
-                      /> */}
                       <RichTextEditor fields={field} />
                     </FormControl>
                     <FormMessage />
@@ -166,7 +162,8 @@ export default function CourseCreationPage() {
                   <FormItem>
                     <FormLabel>Thumbnail Image</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Thumabnail Image" />
+                      {/* <Input {...field} placeholder="Thumabnail Image" /> */}
+                      <Uploader />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
