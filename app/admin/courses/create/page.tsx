@@ -162,8 +162,7 @@ export default function CourseCreationPage() {
                   <FormItem>
                     <FormLabel>Thumbnail Image</FormLabel>
                     <FormControl>
-                      {/* <Input {...field} placeholder="Thumabnail Image" /> */}
-                      <Uploader />
+                      <Uploader onChange={field.onChange} value={field.value}  />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
