@@ -5,6 +5,9 @@ import z from "zod";
 import { v4 as uuidv4 } from "uuid";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 import { S3 } from "@/lib/S3Client";
+import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const fileUploadSchema = z.object({
   fileName: z.string().min(1, { message: "File name is required" }),
@@ -12,8 +15,41 @@ const fileUploadSchema = z.object({
   size: z.number().min(1, { message: "File size is required" }),
   isImage: z.boolean(),
 });
+
+// arcjet
+
+const aj = arcjet.withRule(
+  detectBot({
+    mode: "LIVE",
+    allow: []
+  })
+).withRule(
+  fixedWindow({
+    mode: "LIVE",
+    window: "1m",
+    max: 5
+  })
+)
+
+
 export async function POST(req: NextRequest) {
   try {
+
+    const session = await auth.api.getSession({
+      headers: await headers()
+    })
+
+    const decision = await aj.protect(req,{
+      fingerprint: session?.user.id as string
+    });
+
+    if (decision.isDenied()) {
+      return NextResponse.json(
+        { error: "Dude, you seem to be a bot" },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
 
     const validation = fileUploadSchema.safeParse(body);

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth.client";
+import { authClient } from "@/lib/auth-client";
 import { GithubIcon, Loader2, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -39,23 +39,22 @@ export function LoginForm() {
   }
 
   async function signInWithEmail() {
-      startEmailTransition(async () => {
-          await authClient.emailOtp.sendVerificationOtp({
-            email: email,
-            type: "sign-in",
-            fetchOptions: {
-                onSuccess: () =>{
-                    toast.success("Verification OTP sent to your email");
-                    router.push(`/verify-request?email=${email}`);
-                },
-                onError: (error) => {
-                    toast.error(error.error.message ?? "Error sending the otp");
-                }
-            }
-          })
-      })
+    startEmailTransition(async () => {
+      await authClient.emailOtp.sendVerificationOtp({
+        email: email,
+        type: "sign-in",
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("Verification OTP sent to your email");
+            router.push(`/verify-request?email=${email}`);
+          },
+          onError: (error) => {
+            toast.error(error.error.message ?? "Error sending the otp");
+          },
+        },
+      });
+    });
   }
-
 
   return (
     <Card>
@@ -93,7 +92,14 @@ export function LoginForm() {
         <div className="grid gap-3">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input value={email} onChange={(e) => setEmail(e.target.value)} required type="email" id="email" placeholder="john@example.com" />
+            <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              type="email"
+              id="email"
+              placeholder="john@example.com"
+            />
           </div>
 
           <Button disabled={emailPending} onClick={signInWithEmail}>
@@ -103,7 +109,8 @@ export function LoginForm() {
                 <span>Loading...</span>
               </>
             ) : (
-              <><Send className="size-4" />
+              <>
+                <Send className="size-4" />
                 <span>Sign in with Email</span>
               </>
             )}

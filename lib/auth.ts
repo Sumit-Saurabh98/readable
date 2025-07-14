@@ -1,4 +1,4 @@
-import 'server-only';
+
 
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -6,6 +6,11 @@ import { emailOTP } from "better-auth/plugins"
 import { prisma } from "./db";
 import { env } from "./env";
 import { resend } from "./resend";
+import {admin} from "better-auth/plugins"
+
+
+
+
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql", 
@@ -26,6 +31,7 @@ export const auth = betterAuth({
                     html: `<p>One Time Password: <strong>${otp}</strong></p>`
                   });
             }
-        })
+        }),
+        admin()
     ]
 })
