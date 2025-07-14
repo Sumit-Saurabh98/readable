@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
@@ -20,6 +21,11 @@ model User {
   accounts      Account[]
   courses       Course[]
 
+  role       String?
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
+
   @@unique([email])
   @@map("user")
 }
@@ -34,6 +40,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@map("session")
@@ -73,7 +81,7 @@ model Course {
   id               String       @id @default(uuid())
   title            String
   description      String
-  filekey          String
+  fileKey          String
   price            Int
   duration         Int
   level            CourseLevel  @default(Beginner)
@@ -83,14 +91,14 @@ model Course {
   status           CourseStatus @default(Draft)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
-  User             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String
 }
 
 enum CourseLevel {
   Beginner
   Intermediate
-  Advance
+  Advanced
 }
 
 enum CourseStatus {
