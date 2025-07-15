@@ -2,13 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-
-  eslint: {
-    ignoreDuringBuilds: true
-  },
-  typescript: {
-    ignoreBuildErrors: true
-  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "readablelms.fly.storage.tigris.dev",
+        port: "",
+        pathname: "/**",
+      }
+    ]
+  }
 };
 
 export default nextConfig;
