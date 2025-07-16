@@ -4,6 +4,8 @@ import { DataTable } from "@/components/sidebar/data-table";
 import { SectionCards } from "@/components/sidebar/section-cards";
 
 export default function AdminIndexPage() {
+
+  
   return (
     <>
       <SectionCards />
