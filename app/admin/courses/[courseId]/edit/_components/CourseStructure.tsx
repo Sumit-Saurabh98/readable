@@ -39,6 +39,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { reorderChapters, reorderLessons } from "../actions";
+import { NewChapterModal } from "./NewChapterModal";
+import { NewLessonModal } from "./NewLessonModel";
+import { DeleteLesson } from "./DeleteLesson";
+import { DeleteChapter } from "./DeleteChapter";
 
 interface iAppProps {
   data: AdminCourseSingularType;
@@ -72,18 +76,19 @@ export function CourseStructure({ data }: iAppProps) {
 
   useEffect(() => {
     setItems((prevItems) => {
-      const updatedItems = data.chapter.map((chapter) => ({
-        id: chapter.id,
-        title: chapter.title,
-        order: chapter.position,
-        isOpen:
-          prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
-        lessons: chapter.lessons.map((lesson) => ({
-          id: lesson.id,
-          title: lesson.title,
-          order: lesson.position,
-        })),
-      })) || [];
+      const updatedItems =
+        data.chapter.map((chapter) => ({
+          id: chapter.id,
+          title: chapter.title,
+          order: chapter.position,
+          isOpen:
+            prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
+          lessons: chapter.lessons.map((lesson) => ({
+            id: lesson.id,
+            title: lesson.title,
+            order: lesson.position,
+          })),
+        })) || [];
       return updatedItems;
     });
   }, [data]);
@@ -295,6 +300,7 @@ export function CourseStructure({ data }: iAppProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between border-b border-border">
           <CardTitle>Chapters</CardTitle>
+          <NewChapterModal courseId={data.id} />
         </CardHeader>
         <CardContent className="space-y-8">
           <SortableContext strategy={verticalListSortingStrategy} items={items}>
@@ -340,9 +346,7 @@ export function CourseStructure({ data }: iAppProps) {
                           </p>
                         </div>
 
-                        <Button variant={"outline"} size={"icon"}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <DeleteChapter chapterId={item.id} courseId={data.id} />
                       </div>
 
                       <CollapsibleContent>
@@ -376,9 +380,7 @@ export function CourseStructure({ data }: iAppProps) {
                                       </Link>
                                     </div>
 
-                                    <Button variant={"outline"} size={"icon"}>
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
+                                    <DeleteLesson chapterId={item.id} courseId={data.id} lessonId={lesson.id} />
                                   </div>
                                 )}
                               </SortableItem>
@@ -386,9 +388,10 @@ export function CourseStructure({ data }: iAppProps) {
                           </SortableContext>
 
                           <div className="p-2">
-                            <Button variant={"outline"} className="w-full">
-                              Create New Lession
-                            </Button>
+                            <NewLessonModal
+                              courseId={data.id}
+                              chapterId={item.id}
+                            />
                           </div>
                         </div>
                       </CollapsibleContent>
