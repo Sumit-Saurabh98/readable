@@ -3,7 +3,22 @@ import {EditorContent, useEditor} from "@tiptap/react"
 import StartterKit from "@tiptap/starter-kit"
 import TextAlign from "@tiptap/extension-text-align"
 import { MenuBar } from "./MenuBar";
+
 export function RichTextEditor({fields}: {fields: any}) {
+    const getInitialContent = () => {
+        if (!fields.value) {
+            return '<p>Hello world!🚀</p>';
+        }
+        
+        try {
+            // Try to parse as JSON first (for TipTap JSON format)
+            return JSON.parse(fields.value);
+        } catch (error) {
+            // If JSON parsing fails, treat it as HTML string
+            return fields.value;
+        }
+    };
+
     const editor = useEditor({
         extensions: [StartterKit, TextAlign.configure({
             types: ['heading', 'paragraph'],
@@ -16,10 +31,10 @@ export function RichTextEditor({fields}: {fields: any}) {
 
         immediatelyRender: false,
 
-        onUpdate: ({editor}) =>{
+        onUpdate: ({editor}) => {
             fields.onChange(JSON.stringify(editor.getJSON()))
         },
-        content: fields.value ? JSON.parse(fields.value) : '<p>Hello world!🚀</p>',
+        content: getInitialContent(),
     })
 
     return (
