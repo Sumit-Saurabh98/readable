@@ -53,7 +53,8 @@ export async function enrollInCourseAction(courseId: string): Promise<ApiRespons
                 id: true,
                 title: true,
                 price: true,
-                slug: true
+                slug: true,
+                stripePriceId: true  // Add this to get the dynamic price ID
             }
         })
 
@@ -61,6 +62,14 @@ export async function enrollInCourseAction(courseId: string): Promise<ApiRespons
             return {
                 status: "error",
                 message: "Course not found"
+            }
+        }
+
+        // Check if stripePriceId exists
+        if(!course.stripePriceId){
+            return {
+                status: "error",
+                message: "Course pricing not configured"
             }
         }
 
@@ -152,7 +161,7 @@ export async function enrollInCourseAction(courseId: string): Promise<ApiRespons
                 customer: stripeCustomerId,
                 line_items: [
                     {
-                        price: "price_1RmHUN070l2y1cqdhYXkM7y5",
+                        price: course.stripePriceId,  // Use dynamic price ID instead of hardcoded
                         quantity: 1
                     }
                 ],

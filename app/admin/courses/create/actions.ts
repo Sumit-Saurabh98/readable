@@ -3,6 +3,7 @@
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { ApiResponse } from "@/lib/types";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
@@ -57,16 +58,19 @@ export async function CreateCourse(data: CourseSchemaType):Promise<ApiResponse> 
       };
     }
 
+    const thumbnailUrl = `https://${env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES}.fly.storage.tigris.dev/${encodeURIComponent(validation.data.fileKey)}`
+
     const productData = await stripe.products.create({
       name: validation.data.title,
       description: validation.data.smallDescription,
+      images: [thumbnailUrl],
       default_price_data: {
         currency: 'usd',
         unit_amount: validation.data.price * 100
       }
     })
 
-    const course = await prisma.course.create({
+    await prisma.course.create({
       data: {
         ...validation.data,
         userId: session?.user.id as string,
