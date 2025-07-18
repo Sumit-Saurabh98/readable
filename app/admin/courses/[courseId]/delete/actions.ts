@@ -1,32 +1,63 @@
-"use server"
+"use server";
 
-import { requireAdmin } from "@/app/data/admin/require-admin"
+import { requireAdmin } from "@/app/data/admin/require-admin";
+import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/types";
+import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
 
-export async function deleteCourse(courseId: string):Promise<ApiResponse>{
-    await requireAdmin();
+// arcjet
 
-    try {
+const aj = arcjet
+  .withRule(
+    fixedWindow({
+      mode: "LIVE",
+      window: "1m",
+      max: 5,
+    })
+  );
 
-        await prisma.course.delete({
-            where: {
-                id: courseId
-            }
-        })
+export async function deleteCourse(courseId: string): Promise<ApiResponse> {
+  const session = await requireAdmin();
 
-        revalidatePath('/admin/courses')
+  try {
+    const req = await request();
 
+    const decision = await aj.protect(req, {
+      fingerprint: session?.user.id as string,
+    });
+
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
         return {
-            status: "success",
-            message: "Course deleted successfully"
-        }
-        
-    } catch (error) {
+          status: "error",
+          message: "You have reached the rate limit. Please try again later",
+        };
+      } else {
         return {
-            status:"error",
-            message: "Failed to delete course"
-        }
+          status: "error",
+          message: "Dude, you seem to be a bot",
+        };
+      }
     }
+
+    await prisma.course.delete({
+      where: {
+        id: courseId,
+      },
+    });
+
+    revalidatePath("/admin/courses");
+
+    return {
+      status: "success",
+      message: "Course deleted successfully",
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Failed to delete course",
+    };
+  }
 }
