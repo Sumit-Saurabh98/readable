@@ -3,13 +3,13 @@
 import { requireAdmin } from "@/app/data/admin/require-admin"
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
 import { ApiResponse } from "@/lib/types";
 import { chapterSchema, ChapterSchemaType, courseSchema, CourseSchemaType, lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
 
 // arcjet
-
 const aj = arcjet.withRule(
     fixedWindow({
       mode: "LIVE",
@@ -18,11 +18,10 @@ const aj = arcjet.withRule(
     })
   )
 
-export async function editCourse(data: CourseSchemaType, courseId: string): Promise<ApiResponse>{
+  export async function editCourse(data: CourseSchemaType, courseId: string): Promise<ApiResponse>{
     const user = await requireAdmin();
 
     try {
-
         const req = await request();
 
         const decision = await aj.protect(req,{
@@ -52,15 +51,69 @@ export async function editCourse(data: CourseSchemaType, courseId: string): Prom
             }
         }
 
+        // First, get the existing course data
+        const existingCourse = await prisma.course.findUnique({
+            where: {
+                id: courseId,
+                userId: user.user.id
+            }
+        });
+
+        if (!existingCourse) {
+            return {
+                status: "error",
+                message: "Course not found"
+            }
+        }
+
+        // Get the Stripe product ID from the price ID
+        const stripePrice = await stripe.prices.retrieve(existingCourse.stripePriceId);
+        const productId = stripePrice.product as string;
+
+        // Update the Stripe product (only if price hasn't changed)
+        if (existingCourse.price === result.data.price) {
+            await stripe.products.update(productId, {
+                name: result.data.title,
+                description: result.data.smallDescription,
+            });
+        }
+
+        // Check if price has changed
+        let newPriceId = existingCourse.stripePriceId;
+        if (existingCourse.price !== result.data.price) {
+            // Create a new price if the price has changed
+            const newPrice = await stripe.prices.create({
+                product: productId,
+                currency: 'usd',
+                unit_amount: result.data.price * 100
+            });
+            
+            newPriceId = newPrice.id;
+            
+            // Update the product to use the new price as default
+            await stripe.products.update(productId, {
+                name: result.data.title,
+                description: result.data.smallDescription,
+                default_price: newPriceId
+            });
+            
+            // Now archive the old price (since it's no longer the default)
+            await stripe.prices.update(existingCourse.stripePriceId, {
+                active: false
+            });
+        }
+
+        // Update the course in the database
         await prisma.course.update({
             where: {
                 id: courseId,
                 userId: user.user.id
             },
             data: {
-                ...result.data
+                ...result.data,
+                stripePriceId: newPriceId
             }
-        })
+        });
 
         return {
             status: "success",
@@ -68,12 +121,15 @@ export async function editCourse(data: CourseSchemaType, courseId: string): Prom
         }
         
     } catch (error) {
+        console.error("Error updating course:", error);
         return {
             status: "error",
             message: "Failed to update course. Please try again"
         }
     }
 }
+
+
 
 export async function reorderLessons(
   chapterId: string, 
