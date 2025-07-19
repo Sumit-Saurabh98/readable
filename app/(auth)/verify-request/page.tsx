@@ -3,7 +3,7 @@
 'use client';
 
 import { Suspense } from "react";
-import VerifyRequestInner from "./_components/VerifyRequestInner";
+import { VerifyRequestInner } from "./_components/VerifyRequestInner";
 
 export default function VerifyRequest() {
   return (
