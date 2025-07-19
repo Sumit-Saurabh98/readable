@@ -36,7 +36,7 @@ export async function updateLesson(values: LessonSchemaType, lessonId: string): 
             message:"Lesson updated successfully"
         }
         
-    } catch (error) {
+    } catch {
         return {
             status:"error",
             message:"An unexpected error occured. Please try again"

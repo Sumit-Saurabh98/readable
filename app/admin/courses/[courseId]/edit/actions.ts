@@ -120,8 +120,7 @@ const aj = arcjet.withRule(
             message: "Course Updated Successfully"
         }
         
-    } catch (error) {
-        console.error("Error updating course:", error);
+    } catch {
         return {
             status: "error",
             message: "Failed to update course. Please try again"
@@ -165,7 +164,7 @@ export async function reorderLessons(
       message: "Lessons Reordered Successfully"
     }
 
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to reorder lesson"
@@ -207,7 +206,7 @@ export async function reorderChapters(
       message: "Chapters Reordered Successfully"
     }
 
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to reorder chapters"
@@ -258,7 +257,7 @@ export async function createChapter(values: ChapterSchemaType): Promise<ApiRespo
     }
 
 
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to create chapter"
@@ -314,7 +313,7 @@ export async function createLesson(values: LessonSchemaType): Promise<ApiRespons
     }
 
 
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to create lesson"
@@ -405,7 +404,7 @@ export async function deleteLesson(
       message: "Lesson deleted successfully"
     }
     
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to delete lesson"
@@ -504,7 +503,7 @@ export async function deleteChapter(
       message: "Chapter deleted successfully"
     }
     
-  } catch (error) {
+  } catch {
     console.error("Delete chapter error:", error)
     return {
       status: "error",

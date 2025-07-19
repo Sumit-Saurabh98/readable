@@ -9,7 +9,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
-import { useConstructUrl } from "@/hooks/use-construct-url";
 import {
   IconBook,
   IconCategory,
@@ -19,10 +18,10 @@ import {
   IconPlayerPlay,
 } from "@tabler/icons-react";
 import { CheckIcon } from "lucide-react";
-import Image from "next/image";
 import { checkIfCourseBought } from "@/app/data/user/user-is-enrolled";
 import Link from "next/link";
 import { EnrollmentButton } from "./_components/EnrollmentButton";
+import { CourseImage } from "./_components/CourseImage";
 
 type Params = Promise<{ slug: string }>;
 
@@ -31,23 +30,13 @@ export default async function SlugPage({ params }: { params: Params }) {
 
   const course = await getIndividualCourse(slug);
 
-  const thumbnailUrl = useConstructUrl(course.fileKey);
-
   const isEnrolled = await checkIfCourseBought(course.id);
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 mt-5">
       <div className="order-1 lg:col-span-2">
-        <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg">
-          <Image
-            src={thumbnailUrl}
-            alt="This is a course thumbnail"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-        </div>
+        {/* Use the client component for the image */}
+        <CourseImage fileKey={course.fileKey} alt="This is a course thumbnail" />
 
         <div className="mt-8 space-y-6">
           <div className="space-y-4">
@@ -144,7 +133,7 @@ export default async function SlugPage({ params }: { params: Params }) {
                         {chapter.lessons.map((lesson, index) => (
                           <div
                             key={lesson.id}
-                            className="flex items-center gap-4 rounded-lgp-3 hover-bg-accent transition-colors group"
+                            className="flex items-center gap-4 rounded-lg p-3 hover:bg-accent transition-colors group"
                           >
                             <div className="flex size-8 items-center justify-center rounded-full bg-background border-2 border-primary/20">
                               <IconPlayerPlay className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -171,7 +160,6 @@ export default async function SlugPage({ params }: { params: Params }) {
       </div>
 
       {/* Enrollment card */}
-
       <div className="order-2 lg:col-span-1">
         <div className="top-20 sticky">
           <Card className="py-0">
@@ -247,43 +235,43 @@ export default async function SlugPage({ params }: { params: Params }) {
                 </div>
               </div>
 
-
               {/* Features */}
-
               <div className="mt-6 space-y-3">
                 <h4 className="font-medium">This course includes:</h4>
                 <ul className="space-y-2">
-                  <li className="flex items-center gap-2text-sm">
+                  <li className="flex items-center gap-2 text-sm">
                     <div className="rounded-full bg-green-500/10 p-1 text-green-500">
                       <CheckIcon className="size-3" />
                     </div>
                     <span className="text-sm ml-1">Full lifetime access</span>
                   </li>
 
-                  <li className="flex items-center gap-2text-sm">
+                  <li className="flex items-center gap-2 text-sm">
                     <div className="rounded-full bg-green-500/10 p-1 text-green-500">
                       <CheckIcon className="size-3" />
                     </div>
                     <span className="text-sm ml-1">Access on mobile and desktop</span>
                   </li>
 
-                  <li className="flex items-center gap-2text-sm">
+                  <li className="flex items-center gap-2 text-sm">
                     <div className="rounded-full bg-green-500/10 p-1 text-green-500">
                       <CheckIcon className="size-3" />
                     </div>
-                    <span className="text-sm ml-1">Cetification on completion</span>
+                    <span className="text-sm ml-1">Certification on completion</span>
                   </li>
                 </ul>
               </div>
 
-              {
-                isEnrolled ? (
-                  <Link href={'/dashboard'} className={buttonVariants({className: "w-full"})}>Watch Course</Link>
-                ): (
-                  <EnrollmentButton courseId={course.id}/>
-                )
-              }
-              <p className="mt-3 text-center text-xs text-muted-foreground">30-days money-back gurrantee</p>
+              {isEnrolled ? (
+                <Link href={'/dashboard'} className={buttonVariants({className: "w-full"})}>
+                  Watch Course
+                </Link>
+              ) : (
+                <EnrollmentButton courseId={course.id}/>
+              )}
+              <p className="mt-3 text-center text-xs text-muted-foreground">
+                30-days money-back guarantee
+              </p>
             </CardContent>
           </Card>
         </div>
