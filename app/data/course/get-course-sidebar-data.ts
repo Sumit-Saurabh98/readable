@@ -39,7 +39,17 @@ export async function getCourseSidebarData(slug: string){
                             description: true,
                             thumbnailKey: true,
                             videoKey: true,
-                            position: true
+                            position: true,
+                            lessonProgress: {
+                                where: {
+                                    userId: session.id
+                                },
+                                select: {
+                                    completed: true,
+                                    lessonId: true,
+                                    id: true
+                                }
+                            }
                         }
                     }
                 }

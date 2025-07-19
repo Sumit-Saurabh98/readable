@@ -7,7 +7,7 @@ import { MenuBar } from "./MenuBar";
 export function RichTextEditor({fields}: {fields: any}) {
     const getInitialContent = () => {
         if (!fields.value) {
-            return '<p>Hello world!🚀</p>';
+            return '<p>Provide description about the course</p>';
         }
         
         try {

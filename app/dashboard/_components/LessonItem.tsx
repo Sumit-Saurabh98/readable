@@ -13,11 +13,10 @@ interface iAppProps{
     },
     slug: string
     isActive?: boolean
+    completed: boolean
 }
 
-export function LessonItem({lesson, slug, isActive}: iAppProps) {
-
-    const completed = false
+export function LessonItem({lesson, slug, isActive, completed}: iAppProps) {
 
     return (
         <Link href={`/dashboard/${slug}/${lesson.id}`} className={buttonVariants({
@@ -51,7 +50,7 @@ export function LessonItem({lesson, slug, isActive}: iAppProps) {
                     )}>{lesson.position}. {lesson.title}</p>
                     {completed && <p className="text-[10px] text-green-700 dark:text-green-300 font-medium">Completed</p>}
 
-                    {isActive && !completed && <p className="text-[10px] text-primary font-medium">Currently watching</p>}
+                    {isActive && !completed && <p className="text-[10px] text-primary font-medium">Currently watching...</p>}
                 </div>
             </div>
         </Link>
