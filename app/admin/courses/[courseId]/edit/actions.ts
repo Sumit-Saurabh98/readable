@@ -504,7 +504,6 @@ export async function deleteChapter(
     }
     
   } catch {
-    console.error("Delete chapter error:", error)
     return {
       status: "error",
       message: "Failed to delete chapter in the course."
