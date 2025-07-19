@@ -7,7 +7,7 @@ import { MenuBar } from "./MenuBar";
 
 
 export function RichTextEditor({fields}: {
-    fields: { value: string; onChange: (val: string) => void };
+    fields: { value: string|undefined; onChange: (val: string) => void };
   }) {
     const getInitialContent = () => {
         if (!fields.value) {
