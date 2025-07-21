@@ -4,7 +4,11 @@ import StartterKit from "@tiptap/starter-kit"
 import TextAlign from "@tiptap/extension-text-align"
 import { MenuBar } from "./MenuBar";
 
-export function RichTextEditor({fields}: {fields: any}) {
+
+
+export function RichTextEditor({fields}: {
+    fields: { value: string|undefined; onChange: (val: string) => void };
+  }) {
     const getInitialContent = () => {
         if (!fields.value) {
             return '<p>Provide description about the course</p>';
@@ -13,7 +17,7 @@ export function RichTextEditor({fields}: {fields: any}) {
         try {
             // Try to parse as JSON first (for TipTap JSON format)
             return JSON.parse(fields.value);
-        } catch (error) {
+        } catch {
             // If JSON parsing fails, treat it as HTML string
             return fields.value;
         }

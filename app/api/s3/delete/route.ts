@@ -59,7 +59,7 @@ export async function DELETE(request: NextRequest) {
     await S3.send(command);
 
     return NextResponse.json({message: "File deleted successfully"}, {status: 200});
-  } catch (error) {
+  } catch {
     return NextResponse.json(
         { error: "Missing or Invalid request body" },
         { status: 500 }

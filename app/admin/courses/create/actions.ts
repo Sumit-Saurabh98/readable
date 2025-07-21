@@ -83,7 +83,7 @@ export async function CreateCourse(data: CourseSchemaType):Promise<ApiResponse> 
       status: "success",
       message: "Course created successfully"
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Something went wrong",

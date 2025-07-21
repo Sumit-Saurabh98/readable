@@ -124,7 +124,7 @@ export default function Uploader({value, onChange, fileTypeAccepted}: iAppProps)
         xhr.setRequestHeader("Content-Type", file.type);
         xhr.send(file);
       });
-    } catch (error) {
+    } catch {
       toast.error("File upload failed");
       setFilesState((prev) => ({
         ...prev,
@@ -195,7 +195,7 @@ export default function Uploader({value, onChange, fileTypeAccepted}: iAppProps)
 
       onChange?.("");
 
-      setFilesState((prev) => ({
+      setFilesState(() => ({
         file: null,
         uploading: false,
         progress: 0,
@@ -208,7 +208,7 @@ export default function Uploader({value, onChange, fileTypeAccepted}: iAppProps)
 
       toast.success("File deleted successfully");
 
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete file");
       setFilesState((prev) => ({
         ...prev,
