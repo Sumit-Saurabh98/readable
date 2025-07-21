@@ -4,12 +4,19 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 
+// Add this export for App Router
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: Request) {
-  const body = await req.text();
+  try {
+
+    const body = await req.text();
 
   const headerList = await headers();
 
   const signature = headerList.get("Stripe-Signature") as string;
+
+  console.log("Webhook received, signature present:", !!signature);
 
   let event: Stripe.Event;
 
@@ -19,7 +26,9 @@ export async function POST(req: Request) {
       signature,
       env.STRIPE_WEBHOOK_SECRET
     );
-  } catch {
+    console.log("Event constructed successfully:", event.type);
+  } catch(error) {
+    console.error("Webhook signature verification failed:", error);
     return new Response("Webhook error", { status: 400 });
   }
 
@@ -57,4 +66,9 @@ export async function POST(req: Request) {
   }
 
   return new Response(null, { status: 200 });
+    
+  } catch (error) {
+    console.error("Webhook handler error:", error);
+    return new Response("Internal server error", { status: 500 });
+  }
 }
